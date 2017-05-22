@@ -1,10 +1,12 @@
-import numpy as np
 import cv2
-import time
+import datetime
+
+file_out = 'intruder_log.txt'
+
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 
-def show_webcam(mirror=False):
+def main(mirror=False):
     previmg = None
     cam = cv2.VideoCapture(0)
     while True:
@@ -22,11 +24,17 @@ def show_webcam(mirror=False):
                 if cv2.contourArea(c) > 5000:
                     [x, y, w, h] = cv2.boundingRect(c)
                     cv2.rectangle(img,(x,y),(x+w,y+h),color=(0,0,255),thickness=5)
+                    cv2.putText(img,'Intruder Alert',org=(10,50),fontFace=cv2.FONT_HERSHEY_SIMPLEX,fontScale=2,color=(0,0,255))
+                    with open(file_out, "r+") as fout:
+                        fout.seek(0, 2)
+                        fout.write(str(datetime.datetime.now())+'\n')
+                        fout.close()
         faces = face_cascade.detectMultiScale(gray, 1.3, 5)
         for (x, y, w, h) in faces:
             cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
             roi_gray = gray[y:y + h, x:x + w]
             roi_color = img[y:y + h, x:x + w]
+            cv2.imwrite('intruder_face.jpg',roi_color)
             eyes = eye_cascade.detectMultiScale(roi_gray)
             for (ex, ey, ew, eh) in eyes:
                 cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
@@ -39,4 +47,4 @@ def show_webcam(mirror=False):
     cam.release()
     cv2.destroyAllWindows()
 
-show_webcam(mirror=False)
+main(mirror=False)

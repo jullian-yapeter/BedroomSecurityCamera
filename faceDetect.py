@@ -22,9 +22,6 @@ def show_webcam(mirror=False):
                 if cv2.contourArea(c) > 5000:
                     [x, y, w, h] = cv2.boundingRect(c)
                     cv2.rectangle(img,(x,y),(x+w,y+h),color=(0,0,255),thickness=5)
-            # for c in cnts:
-            #     (x, y, w, h) = cv2.boundingRect(c)
-            #     cv2.rectangle(trackImg, (x, y), (x + w, y + h), (0, 255, 0), 2)
         faces = face_cascade.detectMultiScale(gray, 1.3, 5)
         for (x, y, w, h) in faces:
             cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
